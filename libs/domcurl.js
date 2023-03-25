@@ -3,9 +3,8 @@ const puppeteer = require('puppeteer');
 
 const printHeaders = (headers, preamble, logger) => {
   const headersEntries = Object.entries(headers);
-  for (const header of headersEntries) {
-    logger.log(`${preamble} ${header[0]}: ${header[1]}`);
-  }
+
+  for (const header of headersEntries) logger.log(`${preamble} ${header[0]}: ${header[1]}`);
 };
 
 const domcurl = async (url, options) => {
@@ -21,9 +20,7 @@ const domcurl = async (url, options) => {
     const page = await browser.newPage();
     const headers = {};
 
-    if (options.userAgent) {
-      await page.setUserAgent(options.userAgent);
-    }
+    if (options.userAgent) await page.setUserAgent(options.userAgent);
 
     page.on('request', request => {
       if (request.url() === url.href && options.requestHeader) {
@@ -33,40 +30,30 @@ const domcurl = async (url, options) => {
       }
     });
 
-    if (options.cookies) {
-      await page.setCookie(...options.cookies);
-    }
+    if (options.cookies) await page.setCookie(...options.cookies);
 
-    if (options.referer) {
-      headers['referer'] = options.referer;
-    }
+    if (options.referer) headers['referer'] = options.referer;
 
     Object.assign(headers, options.headers);
 
     await page.setExtraHTTPHeaders(headers);
 
-    if (options.trace) {
-      await page.tracing.start({path: options.trace, screenshots: true});
-    }
+    if (options.trace) await page.tracing.start({path: options.trace, screenshots: true});
 
     const response = await page.goto(url, {
       timeout: options.maxTime,
       waitUntil: options.waitUtil
     });
 
-    if (options.trace) {
-      await page.tracing.stop();
-    }
+    if (options.trace) await page.tracing.stop();
 
-    if (options.responseHeader) {
-      printHeaders(response.headers(), '<');
-    }
+    if (options.responseHeader) printHeaders(response.headers(), '<');
 
     const html = await page.content();
     logger.log(html);
 
     process.exit(0);
-  } catch (err) {
+ } catch (err) {
     errorLogger.error(err);
     process.exit(1);
   }

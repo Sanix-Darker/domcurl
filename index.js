@@ -111,10 +111,8 @@ try {
 }
 
 try {
-  if (args['e']) {
-    referer = new URL(args['e']).href;
-  }
-} catch (err) {
+  if (args['e']) referer = new URL(args['e']).href;
+ } catch (err) {
   errorLogger.log(`-e --referer is not a valid URL`);
   process.exitCode = 1;
   return;
@@ -164,17 +162,11 @@ const generateCookiesHeaders = (cookieStrings, url) => {
       const sameSite = rest.match(/; Samesite=(Lax|Strict)[;]*/);
       const expires = rest.match(/; Expires=(\d+)[;]*/);
 
-      if (domain) {
-        cookie.domain = domain[1];
-      } else {
-        cookie.url = url;
-      }
+      if (domain) cookie.domain = domain[1];
+      else cookie.url = url;
 
-      if (expires) {
-        cookie.expires = expires[1];
-      } else {
-        cookie.session = true;
-      }
+      if (expires) cookie.expires = expires[1];
+      else cookie.session = true;
 
       cookie.httpOnly = (!!httpOnly);
       cookie.secure = (!!secure);
@@ -187,13 +179,10 @@ const generateCookiesHeaders = (cookieStrings, url) => {
   };
 
   if (cookieStrings) {
-    if (cookieStrings instanceof Array) {
-      return cookieStrings.map(cookieString => {
+    if (cookieStrings instanceof Array) return cookieStrings.map(cookieString => {
         parseCookieString(cookieString);
       });
-    } else {
-      return [parseCookieString(cookieStrings)];
-    }
+    else return [parseCookieString(cookieStrings)];
   }
 
   return;
